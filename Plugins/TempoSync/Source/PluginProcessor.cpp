@@ -15,6 +15,13 @@ void TempoSyncPlugin::processBlock(juce::AudioBuffer<float>& buffer,
                                    juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused(buffer, midiMessages);
+
+    if (auto* playHead = getPlayHead())
+    {
+        juce::AudioPlayHead::CurrentPositionInfo info;
+        playHead->getCurrentPosition(info);
+        currentPosition.store(info.ppqPosition);
+    }
 }
 
 juce::AudioProcessorEditor* TempoSyncPlugin::createEditor()
