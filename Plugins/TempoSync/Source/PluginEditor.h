@@ -29,7 +29,7 @@ class TempoSyncEditor : public juce::AudioProcessorEditor
 public:
     explicit TempoSyncEditor(TempoSyncPlugin& processorToUse)
         : juce::AudioProcessorEditor(processorToUse)
-        , positionLabel(processorToUse.currentPosition)
+        , positionLabel(processorToUse.transport.currentPosition)
 
     {
         addAndMakeVisible(positionLabel);

@@ -8,20 +8,29 @@ TempoSyncPlugin::TempoSyncPlugin()
 
 void TempoSyncPlugin::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    juce::ignoreUnused(sampleRate, samplesPerBlock);
+    transport.prepare(sampleRate, samplesPerBlock);
 }
 
 void TempoSyncPlugin::processBlock(juce::AudioBuffer<float>& buffer,
                                    juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused(buffer, midiMessages);
+    transport.process(getPlayHead(), buffer.getNumSamples());
 
-    if (auto* playHead = getPlayHead())
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-        juce::AudioPlayHead::CurrentPositionInfo info;
-        playHead->getCurrentPosition(info);
-        currentPosition.store(info.ppqPosition);
+        auto relativePosition = fmod(transport.ppqPositions[sample], 1.0);
+
+        float sampleVal = 0.f;
+
+        if (transport.info.isPlaying && relativePosition < 0.5)
+            sampleVal = noise.getNextSample();
+
+        for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
+            buffer.setSample(channel, sample, sampleVal);
     }
+
+    buffer.applyGain(0.03f);
 }
 
 juce::AudioProcessorEditor* TempoSyncPlugin::createEditor()

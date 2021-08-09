@@ -1,6 +1,8 @@
 #pragma once
 
 #include <shared_plugin_helpers/shared_plugin_helpers.h>
+#include <shared_processing_code/shared_processing_code.h>
+#include "Transport.h"
 
 //Inhereting from AudioProcessorBase, which is just inhereting from juce::AudioProcessor
 //And adding some default implementations
@@ -20,7 +22,8 @@ public:
     void getStateInformation(juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
 
-    std::atomic<double> currentPosition {0};
+    Transport transport;
+    WhiteNoise::Oscillator noise;
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TempoSyncPlugin)
 };

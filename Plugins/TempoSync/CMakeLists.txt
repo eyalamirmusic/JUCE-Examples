@@ -29,7 +29,7 @@ target_compile_definitions(${BaseTargetName}
 
 target_link_libraries(${BaseTargetName} PRIVATE
         shared_plugin_helpers
+        shared_processing_code
         juce_audio_utils
         juce_recommended_config_flags
-        juce_recommended_lto_flags
-        juce_recommended_warning_flags)
+        juce_recommended_lto_flags)
