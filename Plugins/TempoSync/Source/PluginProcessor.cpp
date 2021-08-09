@@ -1,9 +1,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
+
 TempoSyncPlugin::TempoSyncPlugin()
     : AudioProcessorBase(getDefaultProperties())
 {
+    addParameter(subDiv);
 }
 
 void TempoSyncPlugin::prepareToPlay(double sampleRate, int samplesPerBlock)
@@ -17,13 +20,16 @@ void TempoSyncPlugin::processBlock(juce::AudioBuffer<float>& buffer,
     juce::ignoreUnused(buffer, midiMessages);
     transport.process(getPlayHead(), buffer.getNumSamples());
 
+    auto currentSubDiv = subDiv->getDivisionPPQ();
+    auto halfSubDiv = currentSubDiv / 2.0;
+
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-        auto relativePosition = fmod(transport.ppqPositions[sample], 1.0);
+        auto relativePosition = fmod(transport.ppqPositions[sample], currentSubDiv);
 
         float sampleVal = 0.f;
 
-        if (transport.info.isPlaying && relativePosition < 0.5)
+        if (transport.info.isPlaying && relativePosition < halfSubDiv)
             sampleVal = noise.getNextSample();
 
         for (int channel = 0; channel < buffer.getNumChannels(); ++channel)

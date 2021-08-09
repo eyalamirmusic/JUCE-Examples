@@ -29,14 +29,14 @@ class TempoSyncEditor : public juce::AudioProcessorEditor
 public:
     explicit TempoSyncEditor(TempoSyncPlugin& processorToUse)
         : juce::AudioProcessorEditor(processorToUse)
-        , positionLabel(processorToUse.transport.currentPosition)
+        , editor(processorToUse)
 
     {
-        addAndMakeVisible(positionLabel);
+        addAndMakeVisible(editor);
         setSize(400, 300);
     }
 
-    void resized() override { positionLabel.setBounds(getLocalBounds()); }
+    void resized() override { editor.setBounds(getLocalBounds()); }
 
-    AtomicLabel positionLabel;
+    juce::GenericAudioProcessorEditor editor;
 };
