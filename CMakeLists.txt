@@ -45,6 +45,6 @@ if (${BUILD_JUCE_PROTOTYPE_EXAMPES})
     add_subdirectory(Modules)
 
     #adding project folders:
-    add_subdirectory(Apps)
+#    add_subdirectory(Apps)
     add_subdirectory(Plugins)
 endif()
