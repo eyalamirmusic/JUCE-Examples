@@ -19,7 +19,9 @@ juce_add_plugin("${BaseTargetName}"
         PRODUCT_NAME "Tempo Sync")
 
 target_sources(${BaseTargetName} PRIVATE
-        Source/PluginProcessor.cpp)
+        Source/PluginProcessor.cpp
+        Source/SubdivisionParam.cpp
+        Source/Transport.cpp)
 
 target_compile_definitions(${BaseTargetName}
         PUBLIC

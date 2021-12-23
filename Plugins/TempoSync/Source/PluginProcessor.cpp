@@ -15,26 +15,28 @@ void TempoSyncPlugin::prepareToPlay(double sampleRate, int samplesPerBlock)
 }
 
 void TempoSyncPlugin::processBlock(juce::AudioBuffer<float>& buffer,
-                                   juce::MidiBuffer& midiMessages)
+                                   juce::MidiBuffer&)
 {
-    juce::ignoreUnused(buffer, midiMessages);
     transport.process(getPlayHead(), buffer.getNumSamples());
 
     auto currentSubDiv = subDiv->getDivisionPPQ();
     auto halfSubDiv = currentSubDiv / 2.0;
 
+    auto channelData = buffer.getWritePointer(0);
+
     for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
+        auto& sampleData = channelData[sample];
         auto relativePosition = fmod(transport.ppqPositions[sample], currentSubDiv);
 
-        float sampleVal = 0.f;
-
         if (transport.info.isPlaying && relativePosition < halfSubDiv)
-            sampleVal = noise.getNextSample();
-
-        for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
-            buffer.setSample(channel, sample, sampleVal);
+            sampleData = noise.getNextSample();
+        else
+            sampleData = 0.f;
     }
+
+    for (int index = 1; index < buffer.getNumChannels(); ++index)
+        buffer.copyFrom(index, 0, channelData, buffer.getNumSamples());
 
     buffer.applyGain(0.03f);
 }
